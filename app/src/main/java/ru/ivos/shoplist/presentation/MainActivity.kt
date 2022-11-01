@@ -1,12 +1,12 @@
 package ru.ivos.shoplist.presentation
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.ivos.shoplist.R
-import ru.ivos.shoplist.domain.ShopItem
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +20,12 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)
+        }
+
+        val btn = findViewById<FloatingActionButton>(R.id.btn_add)
+        btn.setOnClickListener {
+            val intent = ShopItemActivity.newIntentAddMode(this)
+            startActivity(intent)
         }
     }
 
@@ -67,7 +73,8 @@ class MainActivity : AppCompatActivity() {
             viewModel.changeEnableState(it)
         }
         shopListAdapter.onShopItemClickListener = {
-
+            val intent = ShopItemActivity.newIntentEditMode(this, it.id)
+            startActivity(intent)
         }
     }
 
