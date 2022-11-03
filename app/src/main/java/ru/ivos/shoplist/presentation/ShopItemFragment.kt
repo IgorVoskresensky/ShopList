@@ -1,8 +1,10 @@
 package ru.ivos.shoplist.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,12 +28,24 @@ class ShopItemFragment : Fragment() {
     private lateinit var etCount: EditText
     private lateinit var btnSave: Button
 
+    private lateinit var onFinishedListener: OnFinishedListener
 
     private var screenMode: String = MODE_UNKNOWN
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        Log.d("tag", "onAttach")
+        if (context is OnFinishedListener){
+            onFinishedListener = context
+        } else {
+            throw RuntimeException("Activity must implements OnFinishedListener")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("tag", "onCreate")
         parseParams()
     }
 
@@ -40,6 +54,7 @@ class ShopItemFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d("tag", "onCreateView")
         return inflater.inflate(R.layout.fragment_shop_item, container, false)
     }
 
@@ -50,6 +65,42 @@ class ShopItemFragment : Fragment() {
         addTextChangeListeners()
         launchModeSetter()
         observeViewModel()
+        Log.d("tag", "onViewCreated")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("tag", "onStart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("tag", "onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("tag", "onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("tag", "onStop")
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("tag", "onDestroyView")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("tag", "onDestroy")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.d("tag", "onDetach")
     }
 
     private fun initViews(view: View) {
@@ -80,7 +131,7 @@ class ShopItemFragment : Fragment() {
         }
 
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressed()
+            onFinishedListener.onFinished()
         }
     }
 
@@ -159,6 +210,11 @@ class ShopItemFragment : Fragment() {
             shopItemId = args.getInt(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
 
+    }
+
+
+    interface OnFinishedListener {
+        fun onFinished()
     }
 
     companion object {
