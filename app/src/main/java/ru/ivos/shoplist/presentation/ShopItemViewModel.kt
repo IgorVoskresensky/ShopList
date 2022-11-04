@@ -1,8 +1,8 @@
 package ru.ivos.shoplist.presentation
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.*
+import kotlinx.coroutines.launch
 import ru.ivos.shoplist.data.ShopListRepositoryImpl
 import ru.ivos.shoplist.domain.AddShopItemUseCase
 import ru.ivos.shoplist.domain.EditShopItemUseCase
@@ -10,9 +10,9 @@ import ru.ivos.shoplist.domain.GetShopItemUseCase
 import ru.ivos.shoplist.domain.ShopItem
 import java.lang.Exception
 
-class ShopItemViewModel : ViewModel() {
+class ShopItemViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository = ShopListRepositoryImpl
+    private val repository = ShopListRepositoryImpl(application)
 
     private val getShopItemUseCase = GetShopItemUseCase(repository)
     private val addShopItemUseCase = AddShopItemUseCase(repository)
@@ -32,8 +32,10 @@ class ShopItemViewModel : ViewModel() {
 
 
     fun getShopItem(shopItemId: Int) {
-        val item = getShopItemUseCase.getShopItem(shopItemId)
-        _shopItem.value = item
+        viewModelScope.launch {
+            val item = getShopItemUseCase.getShopItem(shopItemId)
+            _shopItem.value = item
+        }
     }
 
     fun addShopItem(inputName: String?, inputCount: String?) {
@@ -41,9 +43,11 @@ class ShopItemViewModel : ViewModel() {
         val count = parseCount(inputCount)
         val inputValidate = validateInputs(name, count)
         if (inputValidate) {
-            val shopItem = ShopItem(name, count, true)
-            addShopItemUseCase.addShopItem(shopItem)
-            _shouldCloseScreen.value = Unit
+            viewModelScope.launch {
+                val shopItem = ShopItem(name, count, true)
+                addShopItemUseCase.addShopItem(shopItem)
+                _shouldCloseScreen.value = Unit
+            }
         }
     }
 
@@ -53,9 +57,11 @@ class ShopItemViewModel : ViewModel() {
         val inputValidate = validateInputs(name, count)
         if (inputValidate) {
             _shopItem.value?.let {
-                val item = it.copy(name = name, count = count)
-                editShopItemUseCase.editShopItem(item)
-                _shouldCloseScreen.value = Unit
+                viewModelScope.launch {
+                    val item = it.copy(name = name, count = count)
+                    editShopItemUseCase.editShopItem(item)
+                    _shouldCloseScreen.value = Unit
+                }
             }
         }
     }
