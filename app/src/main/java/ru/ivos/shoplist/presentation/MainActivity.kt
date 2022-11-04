@@ -11,24 +11,25 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.ivos.shoplist.R
+import ru.ivos.shoplist.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.OnFinishedListener {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
-    private var shopItemContainer: FragmentContainerView? = null
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setupRecyclerView()
-        shopItemContainer = findViewById(R.id.shop_item_container)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)
         }
 
-        val btn = findViewById<FloatingActionButton>(R.id.btn_add)
+        val btn = binding.btnAdd
         btn.setOnClickListener {
             if(isONePaneMode()){
                 val intent = ShopItemActivity.newIntentAddMode(this)
@@ -46,7 +47,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnFinishedListener {
     }
 
     private fun isONePaneMode(): Boolean {
-        return shopItemContainer == null
+        return binding.shopItemContainer == null
     }
 
     private fun launchFragment(fragment: Fragment) {
@@ -58,7 +59,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnFinishedListener {
     }
 
     private fun setupRecyclerView() {
-        val rvShopList = findViewById<RecyclerView>(R.id.rv_shop_list)
+        val rvShopList = binding.rvShopList
         shopListAdapter = ShopListAdapter()
         with(rvShopList) {
             adapter = shopListAdapter
