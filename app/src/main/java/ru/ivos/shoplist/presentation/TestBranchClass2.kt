@@ -1,4 +1,4 @@
 package ru.ivos.shoplist.presentation
 
-class TestBranchClass {
+class TestBranchClass2 {
 }
