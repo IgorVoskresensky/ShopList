@@ -13,13 +13,19 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputLayout
-import ru.ivos.shoplist.R
 import ru.ivos.shoplist.databinding.FragmentShopItemBinding
 import ru.ivos.shoplist.domain.ShopItem
 import java.lang.RuntimeException
+import javax.inject.Inject
 
 class ShopItemFragment : Fragment() {
 
+    private val component by lazy {
+        (activity?.application as MainApp).component
+    }
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
 
     private lateinit var viewModel: ShopItemViewModel
 
@@ -39,6 +45,7 @@ class ShopItemFragment : Fragment() {
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
 
     override fun onAttach(context: Context) {
+        component.inject(this)
         super.onAttach(context)
         Log.d("tag", "onAttach")
         if (context is OnFinishedListener) {
@@ -64,7 +71,7 @@ class ShopItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
+        viewModel = ViewModelProvider(this, viewModelFactory)[ShopItemViewModel::class.java]
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
         initViews(view)

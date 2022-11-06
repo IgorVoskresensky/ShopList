@@ -8,15 +8,13 @@ import androidx.lifecycle.Transformations
 import ru.ivos.shoplist.domain.ShopItem
 import ru.ivos.shoplist.domain.ShopListRepository
 import java.lang.RuntimeException
+import javax.inject.Inject
 import kotlin.random.Random
 
-class ShopListRepositoryImpl(
-    application: Application
+class ShopListRepositoryImpl @Inject constructor(
+    private val shopListDao: ShopListDao,
+    private val mapper: ShopListMapper
 ) : ShopListRepository {
-
-    private val shopListDao = AppDatabase.getInstance(application).getShopListDao()
-    private val mapper = ShopListMapper()
-
 
     override suspend fun addShopItem(shopItem: ShopItem) {
         shopListDao.addShopItem(mapper.mapEntityToDbModel(shopItem))
