@@ -4,18 +4,14 @@ import android.app.Application
 import androidx.lifecycle.*
 import kotlinx.coroutines.launch
 import ru.ivos.shoplist.data.ShopListRepositoryImpl
-import ru.ivos.shoplist.domain.DeleteShopItemUseCase
-import ru.ivos.shoplist.domain.EditShopItemUseCase
-import ru.ivos.shoplist.domain.GetShopListUseCase
-import ru.ivos.shoplist.domain.ShopItem
+import ru.ivos.shoplist.domain.*
+import javax.inject.Inject
 
-class MainViewModel(application: Application) : AndroidViewModel(application){
-
-    private val repository = ShopListRepositoryImpl(application)
-
-    private val getShopListUseCase = GetShopListUseCase(repository)
-    private val deleteShopItemUseCase = DeleteShopItemUseCase(repository)
-    private val editShopItemUseCase = EditShopItemUseCase(repository)
+class MainViewModel @Inject constructor(
+    private val getShopListUseCase: GetShopListUseCase,
+    private val deleteShopItemUseCase: DeleteShopItemUseCase,
+    private val editShopItemUseCase: EditShopItemUseCase
+) : ViewModel(){
 
     val shopList = getShopListUseCase.getShopList()
 
